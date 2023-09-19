@@ -39,7 +39,7 @@ getwd()
 list.files()
 
 
-# 2.3. Import and Visualize the dataset-----------------------------------------
+# 2.3. Import and check the dataset-----------------------------------------
 
 library(readr)
 waz_final <- read_csv("data/waz_final.csv")
