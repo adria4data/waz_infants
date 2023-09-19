@@ -111,7 +111,11 @@ str(unique_values_all_columns)
 
 
 # 3. Dependent Variable (DV) and Data Processing---------------------------------
+<<<<<<< HEAD
 # Dependent variable (DV): cWageZ (weight-for-age z-scores; WAZ)
+=======
+# Dependent variable (DV): 
+>>>>>>> 9381d17a85dbd5c032faedaa85e51c6321ec6880
 # Independent variable (IV):
 
 
