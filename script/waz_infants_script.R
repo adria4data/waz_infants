@@ -48,6 +48,66 @@ library(readr)
 waz_final <- read_csv("data/waz_final.csv")
 View(waz_final)
 
+# 2.3.1. Basic inspection of dataset
+
+# View the first 6 rows
+head(waz_final)
+
+# View the last 6 rows
+tail(waz_final)
+
+# View the structure of dataset
+str(waz_final)
+
+# Summarize the dataset
+summary(waz_final)
+
+
+# 2.3.2. Check the tidiness of the dataset
+
+# Checking the missing values. 
+# Tidy data should have a consistent structure, but it can contain missing values.
+sum(is.na(waz_final))
+
+# Tidy data should ideally not have duplicated rows unless the repetition is meaningful.        
+sum(duplicated(waz_final))
+
+# Column names should be clear and descriptive but not too lengthy.
+names(waz_final)
+
+
+# 2.3.3. Check the data types and dimensionality
+# Tells you whether the object is a data frame, matrix, vector, list, etc.
+class(waz_final)
+
+# Returns the class (type) of each column in the data frame.
+sapply(waz_final, class)
+
+# Returns the number of columns.
+ncol(waz_final)
+
+# Returns the number of rows and columns in a data frame.
+dim(waz_final)
+
+# Select only numerical columns
+numerical_columns <- waz_final[, sapply(waz_final, is.numeric)]
+head(numerical_columns) # Show the first few rows of the numerical columns
+View(numerical_columns) # It shows all the variables
+
+
+# Select only categorical columns (factor or character)
+categorical_columns <- waz_final[, sapply(waz_final, function(col) is.factor(col) || is.character(col))]
+# Show the first few rows of the categorical columns
+head(categorical_columns)
+
+# 2.3.4. Specific variable content
+
+# Shows unique values in a specific column.
+unique(waz_final$mAge2c)
+
+# Allows to identify the unique data in all columns
+unique_values_all_columns <- lapply(waz_final, unique)
+str(unique_values_all_columns)
 
 
 # 3. Dependent Variable (DV) and Data Processing---------------------------------
