@@ -112,6 +112,7 @@ str(unique_values_all_columns)
 
 # 3. Dependent Variable (DV) and Data Processing---------------------------------
 # Dependent variable (DV): 
+# Independent variable (IV):
 
 
 # 4. Independent Variables (IV) and Data Processing------------------------------
