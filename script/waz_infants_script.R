@@ -385,7 +385,6 @@ waz_final <- waz_final %>%
 # write.csv(waz_final, "waz_final_modified.csv", row.names = FALSE)
 
 
-
 ## 5.2. Model 0: The intercept-only model (null model)
 
 library(tidyverse)
@@ -394,12 +393,4 @@ library(tidyverse)
 Model_0 <- lm(cWageZ ~ 1, data = waz_final)
 # View the summary of the model
 summary(Model_0)
-
-
-
-
-
-
-
-# 6. Reporting and Interpreting the Outcomes-------------------------------------
 
