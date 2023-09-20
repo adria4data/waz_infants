@@ -38,3 +38,4 @@ library(tidyverse)
 Model_0 <- lm(cWageZ ~ 1, data = waz_final)
 # View the summary of the model
 summary(Model_0)
+
