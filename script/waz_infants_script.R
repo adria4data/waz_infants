@@ -259,6 +259,52 @@ print(outliers_ModZscore)
 
 # 4. Independent Variables (IV) and Data Processing------------------------------
 
+# 4.1. Visual check of the IV (for numerical Variables)--------------------------
+
+# Load the ggplot2 package 
+library(ggplot2)
+
+# Create a boxplot
+ggplot(waz_final, aes(y = mAge)) +
+  geom_boxplot() +
+  ggtitle("Boxplot of (Mothers' Age; mAge)")
+
+# Create a boxplot
+ggplot(waz_final, aes(y = cHageZ)) +
+  geom_boxplot() +
+  ggtitle("Boxplot of (cHageZ)")
+
+
+# 4.2. Compute central tendency, dispersion, skewness, kurtosis, and normality (Shapiro-Wilk P-value)-----
+
+# Load the necessary libraries
+library(moments)
+library(dplyr)
+
+# Calculate summary statistics
+summary_stats <- waz_final %>%
+  summarise(
+    mean_mAge = mean(mAge, na.rm = TRUE),
+    median_mAge = median(mAge, na.rm = TRUE),
+    variance_mAge = var(mAge, na.rm = TRUE),
+    sd_mAge = sd(mAge, na.rm = TRUE),
+    skewness_mAge = skewness(mAge, na.rm = TRUE),
+    kurtosis_mAge = kurtosis(mAge, na.rm = TRUE),
+    shapiro_p_value_mAge = shapiro.test(mAge)$p.value,
+    
+    mean_cHageZ = mean(cHageZ, na.rm = TRUE),
+    median_cHageZ = median(cHageZ, na.rm = TRUE),
+    variance_cHageZ = var(cHageZ, na.rm = TRUE),
+    sd_cHageZ = sd(cHageZ, na.rm = TRUE),
+    skewness_cHageZ = skewness(cHageZ, na.rm = TRUE),
+    kurtosis_cHageZ = kurtosis(cHageZ, na.rm = TRUE),
+    shapiro_p_value_cHageZ = shapiro.test(cHageZ)$p.value
+  )
+# View the summary statistics
+summary_stats
+
+
+
 # 5. Statistical Testing---------------------------------------------------------
 
 # 6. Reporting and Interpreting the Outcomes-------------------------------------
