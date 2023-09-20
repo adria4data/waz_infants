@@ -26,17 +26,7 @@ waz_final <- waz_final %>%
 # This code will keep your original waz_final dataset unchanged and store the modifications in a new dataset called waz_final_modified.
 
 # If you want to save this new dataset (waz_final -- I kept the original name), then use this
-write.csv(waz_final, "waz_final_modified.csv", row.names = FALSE)
+# write.csv(waz_final, "waz_final_modified.csv", row.names = FALSE)
 
-
-
-## 5.2. Model 0: The intercept-only model (null model)
-
-library(tidyverse)
-
-# Run the intercept-only model (null model)
-Model_0 <- lm(cWageZ ~ 1, data = waz_final)
-# View the summary of the model
-summary(Model_0)
 
 
