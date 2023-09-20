@@ -382,7 +382,7 @@ waz_final <- waz_final %>%
 # This code will keep your original waz_final dataset unchanged and store the modifications in a new dataset called waz_final_modified.
 
 # If you want to save this new dataset (waz_final -- I kept the original name), then use this
-write.csv(waz_final, "waz_final_modified.csv", row.names = FALSE)
+# write.csv(waz_final, "waz_final_modified.csv", row.names = FALSE)
 
 
 
