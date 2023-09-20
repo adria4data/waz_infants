@@ -112,6 +112,149 @@ str(unique_values_all_columns)
 # Dependent variable (DV): cWageZ (weight-for-age z-scores; WAZ)
 # Independent variable (IV):
 
+# 3.1. Visual check of the DV---------------------------------------------------
+
+
+# Histogram for DV
+library(ggplot2)
+ggplot(waz_final, aes(x = cWageZ)) + 
+  geom_histogram(bins = 50, col= "white") +
+  ggtitle("Histogram")
+
+
+# Histogram adding the normal distribution curve
+# Calculate mean and standard deviation of the data
+data_mean <- mean(waz_final$cWageZ, na.rm = TRUE)
+data_sd <- sd(waz_final$cWageZ, na.rm = TRUE)
+# Create the ggplot
+ggplot(waz_final, aes(x = cWageZ)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 50, col= "white") + 
+  stat_function(fun = dnorm, args = list(mean = data_mean, sd = data_sd), color = "red") +
+  ggtitle("Histogram with Normal Distribution Curve")
+
+
+# Boxplot to identify outliers and understand the data's spread.
+ggplot(waz_final, aes(y = cWageZ)) + geom_boxplot()
+ggplot(waz_final, aes(y = cWageZ)) + 
+  geom_boxplot(outlier.colour = "red")
+
+
+# Density Plot: To visualize the distribution.
+ggplot(waz_final, aes(x = cWageZ)) + geom_density()
+
+# Q-Q Plot: To assess normality.
+ggplot(waz_final, aes(sample = cWageZ)) + stat_qq()
+
+
+#Pair Plot: To visualize relationships between multiple numerical variables, if applicable.
+# Filter only numeric columns
+waz_final_numeric <- waz_final[, sapply(waz_final, is.numeric)]
+# Create the pairs plot
+pairs(waz_final_numeric)
+
+
+# 3.2. Compute central tendency, dispersion, skewness, kurtosis, and normality (Shapiro-Wilk P-value)-----------
+
+library(tidyverse)
+library(moments)
+
+summary_stats <- waz_final %>%
+  summarise(
+    mean = mean(cWageZ, na.rm = TRUE),
+    median = median(cWageZ, na.rm = TRUE),
+    variance = var(cWageZ, na.rm = TRUE),
+    sd = sd(cWageZ, na.rm = TRUE),
+    skewness = skewness(cWageZ, na.rm = TRUE),
+    kurtosis = kurtosis(cWageZ, na.rm = TRUE),
+    shapiro_p_value = shapiro.test(cWageZ)$p.value
+  )
+# View the summary statistics
+summary_stats
+
+
+# 3.3. Other statistics used for identifying outliers---------------------------
+
+# Coefficient of Variation**: To compare the degree of variation if you have more than one DV.
+sd(waz_final$cWageZ, na.rm = TRUE) / mean(waz_final$cWageZ, na.rm = TRUE)
+
+# Percentiles: 25th, 50th, 75th, and other percentiles to understand distribution.
+quantile(waz_final$cWageZ, probs = c(0.25, 0.5, 0.75), na.rm = TRUE)
+
+# Confidence Intervals: For mean or median.
+t.test(waz_final$cWageZ)$conf.int  # For mean
+
+
+# Tukey's method: it uses the Interquartile Range (IQR) to identify outliers.
+# Load the dplyr package
+library(dplyr)
+
+# Tukey's Method to find outliers
+Q1 <- quantile(waz_final$cWageZ, 0.25, na.rm = TRUE)
+Q3 <- quantile(waz_final$cWageZ, 0.75, na.rm = TRUE)
+IQR <- Q3 - Q1
+outliers_Tukey <- waz_final %>% 
+  filter(cWageZ < (Q1 - 1.5 * IQR) | cWageZ > (Q3 + 1.5 * IQR))
+# View the outliers
+print(outliers_Tukey)
+
+# Group the outliers by cID
+library(dplyr)
+# Grouping outliers by cID
+grouped_outliers_Tukey <- outliers_Tukey %>%
+  group_by(cID) %>%
+  summarize(
+    Num_Outliers = n(),  # Number of outliers per cID
+    Min_cWageZ = min(cWageZ, na.rm = TRUE),  # Minimum value of cWageZ for each cID
+    Max_cWageZ = max(cWageZ, na.rm = TRUE)  # Maximum value of cWageZ for each cID
+  )
+# View the grouped outliers
+print(grouped_outliers_Tukey)
+
+
+# Z-score Method**: used to find outliers
+
+# Load the dplyr package if not already loaded
+# library(dplyr)
+
+# Z-score Method to find outliers
+mean_val <- mean(waz_final$cWageZ, na.rm = TRUE)
+sd_val <- sd(waz_final$cWageZ, na.rm = TRUE)
+
+outliers_Zscore <- waz_final %>% 
+  mutate(z_score = (cWageZ - mean_val) / sd_val) %>% 
+  filter(abs(z_score) > 3)
+# View the outliers
+print(outliers_Zscore)
+
+# Group the outliers by cID
+# Grouping outliers by cID using Z-score method and listing all outliers
+grouped_outliers_Zscore_listed <- outliers_Zscore %>%
+  group_by(cID) %>%
+  summarize(
+    Num_Outliers = n(),  # Number of outliers per cID
+    Min_cWageZ = min(cWageZ, na.rm = TRUE),  # Minimum value of cWageZ for each cID
+    Max_cWageZ = max(cWageZ, na.rm = TRUE),  # Maximum value of cWageZ for each cID
+    All_Outliers = list(cWageZ)  # List all individual outlier values for each cID
+  )
+# View the grouped outliers
+print(grouped_outliers_Zscore_listed)
+
+
+# The Modified Z-score: it uses the median and the Median Absolute Deviation (MAD) instead of the mean and standard deviation.
+# A common threshold is a Modified Z-score of +/- 3.5.
+# Load the dplyr package
+# library(dplyr)
+# Modified Z-score Method to find outliers
+median_val <- median(waz_final$cWageZ, na.rm = TRUE)
+mad_val <- mad(waz_final$cWageZ, na.rm = TRUE)
+
+outliers_ModZscore <- waz_final %>% 
+  mutate(mod_z_score = 0.6745 * (cWageZ - median_val) / mad_val) %>% 
+  filter(abs(mod_z_score) > 3.5)
+
+# View the outliers
+print(outliers_ModZscore)
+
 
 
 # 4. Independent Variables (IV) and Data Processing------------------------------
