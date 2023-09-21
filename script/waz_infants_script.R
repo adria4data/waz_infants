@@ -15,7 +15,7 @@
 
 # 2. Data Exploration------------------------------------------------------------
 
-# 2.1. Setting Up the Environment: R Packages Installation----------------------
+### 2.1. Setting Up the Environment: R Packages Installation----------------------
 install.packages("tidyverse")
 install.packages("moments")
 install.packages(c("lmtest", "car", "carData"))
@@ -27,7 +27,8 @@ library(car)
 library(carData)
 
 
-# 2.2. Setting the Working Directory------------------------------------------
+
+### 2.2. Setting the Working Directory------------------------------------------
 
 # Check the working directory
 getwd()
@@ -39,13 +40,15 @@ getwd()
 list.files()
 
 
-# 2.3. Import and check the dataset-----------------------------------------
+
+### 2.3. Import and check the dataset--------------------------------------------
 
 library(readr)
 waz_final <- read_csv("data/waz_final.csv")
 View(waz_final)
 
-# 2.3.1. Basic inspection of dataset
+
+##### 2.3.1. Basic inspection of dataset-----------------------------------------
 
 # View the first 6 rows
 head(waz_final)
@@ -60,7 +63,7 @@ str(waz_final)
 summary(waz_final)
 
 
-# 2.3.2. Check the tidiness of the dataset
+##### 2.3.2. Check the tidiness of the dataset-----------------------------------
 
 # Checking the missing values. 
 # Tidy data should have a consistent structure, but it can contain missing values.
@@ -72,7 +75,7 @@ sum(duplicated(waz_final))
 # Column names should be clear and descriptive but not too lengthy.
 names(waz_final)
 
-# 2.3.3. Check the data types and dimensionality
+##### 2.3.3. Check the data types and dimensionality
 # Tells you whether the object is a data frame, matrix, vector, list, etc.
 class(waz_final)
 
@@ -97,7 +100,7 @@ categorical_columns <- waz_final[, sapply(waz_final, function(col) is.factor(col
 head(categorical_columns)
 
                                           
-# 2.3.4. Specific variable content
+##### 2.3.4. Specific variable content-------------------------------------------
 
 # Shows unique values in a specific column.
 unique(waz_final$mAge2c)
@@ -107,13 +110,14 @@ unique_values_all_columns <- lapply(waz_final, unique)
 str(unique_values_all_columns)
 
 
+
 # 3. Dependent Variable (DV) and Data Processing---------------------------------
 
 # Dependent variable (DV): cWageZ (weight-for-age z-scores; WAZ)
 # Independent variable (IV):
 
-# 3.1. Visual check of the DV---------------------------------------------------
 
+## 3.1. Visual check of the DV---------------------------------------------------
 
 # Histogram for DV
 library(ggplot2)
@@ -153,7 +157,7 @@ waz_final_numeric <- waz_final[, sapply(waz_final, is.numeric)]
 pairs(waz_final_numeric)
 
 
-# 3.2. Compute central tendency, dispersion, skewness, kurtosis, and normality (Shapiro-Wilk P-value)-----------
+## 3.2. Compute central tendency, dispersion, skewness, kurtosis, and normality (Shapiro-Wilk P-value)-----------
 
 library(tidyverse)
 library(moments)
@@ -172,7 +176,7 @@ summary_stats <- waz_final %>%
 summary_stats
 
 
-# 3.3. Other statistics used for identifying outliers---------------------------
+## 3.3. Other statistics used for identifying outliers---------------------------
 
 # Coefficient of Variation**: To compare the degree of variation if you have more than one DV.
 sd(waz_final$cWageZ, na.rm = TRUE) / mean(waz_final$cWageZ, na.rm = TRUE)
@@ -257,9 +261,11 @@ print(outliers_ModZscore)
 
 
 
+
 # 4. Independent Variables (IV) and Data Processing------------------------------
 
-# 4.1. Visual check of the IV (for numerical Variables)--------------------------
+
+## 4.1. Visual check of the IV (for numerical Variables)--------------------------
 
 # Load the ggplot2 package 
 library(ggplot2)
@@ -275,7 +281,7 @@ ggplot(waz_final, aes(y = cHageZ)) +
   ggtitle("Boxplot of (cHageZ)")
 
 
-# 4.2. Compute central tendency, dispersion, skewness, kurtosis, and normality (Shapiro-Wilk P-value)-----
+## 4.2. Compute central tendency, dispersion, skewness, kurtosis, and normality (Shapiro-Wilk P-value)-----
 
 # Load the necessary libraries
 library(moments)
@@ -364,9 +370,12 @@ summary_stats <- waz_final %>%
 # View the summary statistics
 summary_stats
 
+
+
 # 5. Statistical Testing---------------------------------------------------------
 
-# 5.1. Set the levels of IV-----------------------------------------------------
+
+## 5.1. Set the levels of IV-----------------------------------------------------
 library(dplyr)
 waz_final <- waz_final %>%
   mutate(
@@ -385,14 +394,14 @@ waz_final <- waz_final %>%
 # write.csv(waz_final, "waz_final_modified.csv", row.names = FALSE)
 
 
-## 5.2. Model 0: The intercept-only model (null model)
+## 5.2. Model 0: The intercept-only model (null model)---------------------------
 
-library(tidyverse)
-
+# library(tidyverse)
 # Run the intercept-only model (null model)
 Model_0 <- lm(cWageZ ~ 1, data = waz_final)
 # View the summary of the model
 summary(Model_0)
+
 
 ## 5.3. Model 1: Diagnostic - Plotting Linearity and Normality------------------------
 
@@ -478,6 +487,7 @@ anova(Model_1b_no_outliers)
 confint(Model_1b_no_outliers)
 
 
+
 ## 5.5. Model 2: DV (outliers included)------------------------------------------------------------------
 
 # The structure of the model
@@ -530,6 +540,7 @@ vif_table$Notes <- "Assessing multicollinearity"
 final_table <- bind_rows(diagnostic_table, vif_table)
 # Print the final table
 print(final_table)
+
 
 
 ## 5.6. Model 2b: Variables with no outliers were inclued-------------------------
@@ -610,6 +621,7 @@ model_comparison <- data.frame(
 print(model_comparison)
 
 
+
 ## 5.8. Model 3: Only statistical significant variables from Model 2 included-----
 
 # The structure of the model
@@ -629,6 +641,7 @@ anova(Model_3)
 confint(Model_3)
 
 
+
 # 5.9. Model 3b: Only statistical significant variables with no outliers from Model 2 included------
 
 # The structure of the model
@@ -646,6 +659,7 @@ anova(Model_3b_no_outliers)
 
 # Get Confidence Intervals
 confint(Model_3b_no_outliers)
+
 
 
 ## 5.10. Comprehensive Regression Models for Analyzing Wage Determinants: Including and Excluding Outliers------------
@@ -712,9 +726,12 @@ print(anova_test_1_3)
 
 
 
+
 # 6. Reporting and Interpreting the Outcomes-------------------------------------
 
 # The report of the outcomes and interpretation will be completed in a different document.
 
-# Final
-#################################################################################
+## Final##
+
+################################################################################
+
