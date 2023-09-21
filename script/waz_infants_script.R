@@ -394,3 +394,327 @@ Model_0 <- lm(cWageZ ~ 1, data = waz_final)
 # View the summary of the model
 summary(Model_0)
 
+## 5.3. Model 1: Diagnostic - Plotting Linearity and Normality------------------------
+
+Model_1 <- lm(cWageZ ~ Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge, data = waz_final)
+
+# Added Variable Plots for assessing linearity
+avPlots(Model_1)
+
+# Q-Q Plot for assessing normality of residuals
+qqPlot(Model_1, id.n = 0)
+
+
+# Model 1: Diagnostic Tests for Model Assumptions: Homoscedasticity, Independence, and Multicollinearity
+
+# Load necessary libraries
+# library(car) # for vif(), bptest(), and dwtest()
+# library(lmtest) # for dwtest()
+
+# Fit the model
+Model_1 <- lm(cWageZ ~ Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge, data = waz_final)
+
+# Run Breusch-Pagan test and capture p-value
+bp_p_value <- bptest(Model_1)$p.value
+
+# Run Durbin-Watson test and capture p-value
+dw_p_value <- dwtest(Model_1)$p.value
+
+# Calculate VIF for all predictors
+individual_vif <- vif(Model_1)
+
+# Calculate average VIF for all predictors
+avg_vif <- mean(individual_vif)
+
+# Round all values to 4 decimal places
+bp_p_value <- round(bp_p_value, 4)
+dw_p_value <- round(dw_p_value, 4)
+avg_vif <- round(avg_vif, 4)
+individual_vif <- round(individual_vif, 4)
+
+# Create a table to display the diagnostics
+diagnostics_table <- data.frame(
+  Category = rep("General", 3),
+  Test = c("Breusch-Pagan p-value", "Durbin-Watson p-value", "Average VIF"),
+  Value = c(bp_p_value, dw_p_value, avg_vif)
+)
+
+# Create a table to display the general diagnostics
+diagnostics_table <- data.frame(
+  Test = c("Breusch-Pagan p-value", "Durbin-Watson p-value", "Average VIF"),
+  Value = c(bp_p_value, dw_p_value, avg_vif)
+)
+
+# Display the diagnostics table
+print("General Diagnostics:")
+print(diagnostics_table)
+
+# Create a table to display individual VIF values
+vif_table <- data.frame(
+  Test = paste("VIF for", names(individual_vif)),
+  Value = individual_vif
+)
+
+# Display the VIF table
+print("Individual VIFs:")
+print(vif_table)
+
+
+
+## 5.4 Model 1b: Variables with no outliers were included-----------------------
+
+# The structure of the model**
+# DV: cWageZ_no_outliers
+
+# IV: Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge_no_outliers
+
+## Model 1b
+Model_1b_no_outliers <- lm(cWageZ_no_outliers ~ Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge_no_outliers, data = waz_final)
+# View the summary of the model
+summary(Model_1b_no_outliers)
+# Perform Omnibus Test
+anova(Model_1b_no_outliers)
+# Get Confidence Intervals
+confint(Model_1b_no_outliers)
+
+
+## 5.5. Model 2: DV (outliers included)------------------------------------------------------------------
+
+# The structure of the model
+# DV: cWageZ
+# IV: Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge + cHageZ
+
+
+# Model 2
+Model_2 <- lm(cWageZ ~ Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge + cHageZ, data = waz_final)
+# View the summary of the model
+summary(Model_2)
+# Perform Omnibus Test
+anova(Model_2)
+# Get Confidence Intervals
+confint(Model_2)
+
+
+# Model 2: Diagnostic -- Plotting Linearity and Normality
+# Added Variable Plots for assessing linearity
+avPlots(Model_2)
+# Q-Q Plot for assessing normality of residuals
+qqPlot(Model_2, id.n = 0)
+
+
+# Model 2**: Diagnostic Tests for Model Assumptions: Homoscedasticity, Independence, and Multicollinearity
+
+# Load necessary libraries
+# library(car)
+# library(lmtest)
+
+# Define the model
+Model_2 <- lm(cWageZ ~ Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge + cHageZ, data = waz_final)
+# Breusch-Pagan Test for assessing homoscedasticity
+bp_test <- bptest(Model_2)
+# Durbin-Watson Test for assessing independence of residuals
+dw_test <- dwtest(Model_2)
+# Variance Inflation Factors (VIF) for assessing multicollinearity
+vif_values <- vif(Model_2)
+# Create a table to store the results
+diagnostic_table <- tibble(
+  Test = c("Breusch-Pagan Test p-value", "Durbin-Watson Test p-value"),
+  Value = c(bp_test$p.value, dw_test$p.value),
+  Notes = c("Assessing homoscedasticity", "Assessing independence of residuals")
+)
+# Add VIF to the table
+vif_table <- as_tibble(vif_values, rownames = "Variable")
+colnames(vif_table) <- c("Test", "Value")
+vif_table$Notes <- "Assessing multicollinearity"
+# Combine tables
+final_table <- bind_rows(diagnostic_table, vif_table)
+# Print the final table
+print(final_table)
+
+
+## 5.6. Model 2b: Variables with no outliers were inclued-------------------------
+
+# The structure of the model:
+# DV: cWageZ_no_outliers
+
+# IV: Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge_no_outliers + cHageZ_no_outliers
+
+# Model 2b
+Model_2b_no_outliers <- lm(cWageZ_no_outliers ~ Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge_no_outliers + cHageZ_no_outliers, data = waz_final)
+
+# View the summary of the model
+summary(Model_2b_no_outliers)
+
+# Perform Omnibus Test
+anova(Model_2b_no_outliers)
+
+# Get Confidence Intervals
+confint(Model_2b_no_outliers)
+
+
+
+## 5.7 Compare Model 1 and Model 2------------------------------------------------
+
+# Models comparison
+
+# Summary statistics for Model_1
+summary_1 <- summary(Model_1)
+print(paste("AIC for Model 1: ", round(AIC(Model_1), 4)))
+print(paste("BIC for Model 1: ", round(BIC(Model_1), 4)))
+print(paste("Adjusted R-squared for Model 1: ", round(summary_1$adj.r.squared, 4)))
+
+# Extract p-values and round them to 4 digits
+p_values_1 <- round(summary_1$coefficients[, "Pr(>|t|)"], 4)
+
+# Summary statistics for Model_2
+summary_2 <- summary(Model_2)
+print(paste("AIC for Model 2: ", round(AIC(Model_2), 4)))
+print(paste("BIC for Model 2: ", round(BIC(Model_2), 4)))
+print(paste("Adjusted R-squared for Model 2: ", round(summary_2$adj.r.squared, 4)))
+
+# Extract p-values and round them to 4 digits
+p_values_2 <- round(summary_2$coefficients[, "Pr(>|t|)"], 4)
+
+# ANOVA test between Model 1 and Model 2
+anova_result <- anova(Model_1, Model_2)
+anova_p_value <- round(anova_result$"Pr(>F)"[2], 4)
+print(paste("ANOVA p-value comparison between Model 1 and Model 2: ", anova_p_value))
+
+
+# Create a table with the output
+
+# Summary statistics for Model_1
+summary_1 <- summary(Model_1)
+aic_1 <- round(AIC(Model_1), 4)
+bic_1 <- round(BIC(Model_1), 4)
+adj_r2_1 <- round(summary_1$adj.r.squared, 4)
+
+# Summary statistics for Model_2
+summary_2 <- summary(Model_2)
+aic_2 <- round(AIC(Model_2), 4)
+bic_2 <- round(BIC(Model_2), 4)
+adj_r2_2 <- round(summary_2$adj.r.squared, 4)
+
+# ANOVA test between Model 1 and Model 2
+anova_result <- anova(Model_1, Model_2)
+anova_p_value <- round(anova_result$"Pr(>F)"[2], 4)
+
+# Create a data frame to hold the metrics
+model_comparison <- data.frame(
+  Metric = c("AIC", "BIC", "Adjusted R-squared", "ANOVA p-value"),
+  Model_1 = c(aic_1, bic_1, adj_r2_1, "N/A"),
+  Model_2 = c(aic_2, bic_2, adj_r2_2, anova_p_value)
+)
+
+# Display the table
+print(model_comparison)
+
+
+## 5.8. Model 3: Only statistical significant variables from Model 2 included-----
+
+# The structure of the model
+# DV: cWageZ
+# IV: cBirthT + cAgeM3c + Anemia2 + mSES3c + cHageZ
+
+# Model 3
+Model_3 <- lm(cWageZ ~ cBirthT + cAgeM3c + Anemia2 + mSES3c + cHageZ, data = waz_final)
+
+# View the summary of the model
+summary(Model_3)
+
+# Perform Omnibus Test
+anova(Model_3)
+
+# Get Confidence Intervals
+confint(Model_3)
+
+
+# 5.9. Model 3b: Only statistical significant variables with no outliers from Model 2 included------
+
+# The structure of the model
+# DV: cWageZ_no_outliers
+# IV:cBirthT + cAgeM3c + Anemia2 + mSES3c + cHageZ_no_outliers
+
+# Model 3b
+Model_3b_no_outliers <- lm(cWageZ_no_outliers ~ cBirthT + cAgeM3c + Anemia2 + mSES3c + cHageZ_no_outliers, data = waz_final)
+
+# View the summary of the model
+summary(Model_3b_no_outliers)
+
+# Perform Omnibus Test
+anova(Model_3b_no_outliers)
+
+# Get Confidence Intervals
+confint(Model_3b_no_outliers)
+
+
+## 5.10. Comprehensive Regression Models for Analyzing Wage Determinants: Including and Excluding Outliers------------
+
+# Model 1
+Model_1 <- lm(cWageZ ~ Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge, data = waz_final)
+
+# Model 1b without outliers
+Model_1b_no_outliers <- lm(cWageZ_no_outliers ~ Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge_no_outliers, data = waz_final)
+
+# Model 2
+Model_2 <- lm(cWageZ ~ Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge + cHageZ, data = waz_final)
+
+# Model 2b without outliers
+Model_2b_no_outliers <- lm(cWageZ_no_outliers ~ Location + cBirthT + cAgeM3c + mMarital2 + Anemia2 + mSES3c + cMDD + cRank3c + mAge_no_outliers + cHageZ_no_outliers, data = waz_final)
+
+# Model 3
+Model_3 <- lm(cWageZ ~ cBirthT + cAgeM3c + Anemia2 + mSES3c + cHageZ, data = waz_final)
+
+# Model 3b without outliers
+Model_3b_no_outliers <- lm(cWageZ_no_outliers ~ cBirthT + cAgeM3c + Anemia2 + mSES3c + cHageZ_no_outliers, data = waz_final)
+
+
+# Calculate adjusted R-squared, AIC, and BIC
+summary_stats <- data.frame(
+  Model = c("Model_1", "Model_1b_no_outliers", "Model_2", "Model_2b_no_outliers", "Model_3", "Model_3b_no_outliers"),
+  Adj_R2 = c(
+    summary(Model_1)$adj.r.squared,
+    summary(Model_1b_no_outliers)$adj.r.squared,
+    summary(Model_2)$adj.r.squared,
+    summary(Model_2b_no_outliers)$adj.r.squared,
+    summary(Model_3)$adj.r.squared,
+    summary(Model_3b_no_outliers)$adj.r.squared
+  ),
+  AIC = c(
+    AIC(Model_1),
+    AIC(Model_1b_no_outliers),
+    AIC(Model_2),
+    AIC(Model_2b_no_outliers),
+    AIC(Model_3),
+    AIC(Model_3b_no_outliers)
+  ),
+  BIC = c(
+    BIC(Model_1),
+    BIC(Model_1b_no_outliers),
+    BIC(Model_2),
+    BIC(Model_2b_no_outliers),
+    BIC(Model_3),
+    BIC(Model_3b_no_outliers)
+  )
+)
+
+# ANOVA test (only for nested models)
+anova_test_1_2 <- anova(Model_1, Model_2)
+anova_test_1_3 <- anova(Model_1, Model_3)
+
+# Display the tables
+print("Summary Statistics")
+print(summary_stats)
+print("ANOVA for Model 1 and Model 2")
+print(anova_test_1_2)
+print("ANOVA for Model 1 and Model 3")
+print(anova_test_1_3)
+
+
+
+# 6. Reporting and Interpreting the Outcomes-------------------------------------
+
+# The report of the outcomes and interpretation will be completed in a different document.
+
+# Final
+#################################################################################
